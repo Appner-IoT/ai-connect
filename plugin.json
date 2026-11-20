@@ -1,10 +1,10 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "appner",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Unified IoT Data & Intelligence Platform. Ask about your Appner fleet: device state, offline devices, telemetry history, geofences and alerts. Connects to your Appner company account over MCP with OAuth sign-in.",
   "author": {
-    "name": "Appner",
+    "name": "Appner IoT",
     "url": "https://appner.com"
   },
   "homepage": "https://appner.com",
@@ -17,6 +17,89 @@
     "tracking",
     "mcp"
   ],
-  "logo": "assets/icon.png",
-  "license": "MIT"
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Appner AI Connect",
+        "shortDescription": "IoT fleet insights",
+        "longDescription": "Appner AI Connect lets you ask about your company's IoT fleet on the Appner platform in plain words, without opening a dashboard.\n\nWhat you can ask:\n- Fleet state: how many devices you have, how many are online, which ones need attention.\n- Silent devices: which trackers or sensors stopped reporting, most urgent first.\n- Location: where a vehicle or asset was last seen and how fresh that position is.\n- Telemetry history: how a temperature, battery or other reading changed over hours or days, with minimum, average and maximum, and how long it stayed beyond a limit.\n- Fleet-wide readings: which devices have low battery now, went above a temperature today, drove the most or exceeded a speed.\n- Geofences: which devices are inside or outside a place, and when a device entered or left it.\n- Alerts: which rules are configured, which alerts fired and what the readings were around that time.\n- Commands: which commands are waiting for or were delivered to a device.\n\nYou need an Appner account. Sign in with your Appner email, password and company name; the assistant then has exactly your Appner role and sees only your company's data. Operators read devices, telemetry, geofences, alerts and commands. Administrators can also queue or cancel device commands, only when you explicitly ask, and read plan usage and the audit log. Owners can also manage Grafana access tokens.\n\nLocation and geofence answers come from each device's last reported position, so the assistant tells you how old it is. History covers up to 31 days per question. Appner AI Connect does not create accounts, change devices on its own, or take payments.",
+        "developerName": "Appner IoT",
+        "category": "Productivity",
+        "capabilities": [
+          "Summarize fleet health",
+          "Find devices that stopped reporting",
+          "Locate a device and check geofences",
+          "Analyze telemetry history",
+          "Investigate alerts",
+          "Review device commands"
+        ],
+        "websiteURL": "https://appner.com/en/",
+        "supportURL": "https://appner.com/en/#contact",
+        "privacyPolicyURL": "https://appner.com/en/product-privacy-policy/",
+        "termsOfServiceURL": "https://appner.com/en/terms-of-use/",
+        "defaultPrompt": [
+          "How many devices do I have, and how many are online?",
+          "Which devices have not reported in the last 3 hours?",
+          "Show a device's temperature over the last 24 hours with min, average and max."
+        ],
+        "logo": "./assets/icon.png",
+        "composerIcon": "./assets/icon.png"
+      },
+      "review": {
+        "commerce": false,
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Fleet summary. Start: signed in with the review account (operator role, company demo), which has sample devices, some online and some silent.",
+              "prompt": "How many devices do I have, and how many are online?",
+              "tools_triggered": "get_fleet_health_summary",
+              "expected_behavior": "Calls get_fleet_health_summary once and answers with the total number of devices and the number online, taken from the tool result. It does not present the recent-activity sample as the full list of offline devices."
+            },
+            {
+              "description": "Silent devices. Start: the demo fleet has at least one device whose last report is more than 3 hours old.",
+              "prompt": "Which devices have not reported in the last 3 hours?",
+              "tools_triggered": "search_devices_by_state",
+              "expected_behavior": "Calls search_devices_by_state with offline_for_minutes 180 and lists the returned devices by name, most stale first, with when each was last seen. The count in the answer equals the count field of the result."
+            },
+            {
+              "description": "Telemetry history with server-side statistics. Start: the demo device VEH-FRESHBOX-01 has cargo temperature readings for the last 24 hours.",
+              "prompt": "Show the cargo temperature of VEH-FRESHBOX-01 over the last 24 hours, with min, average and max.",
+              "tools_triggered": "resolve_device, list_metric_definitions, get_telemetry",
+              "expected_behavior": "Resolves the device by name, finds the temperature metric, then calls get_telemetry once with a bucket (for example 1h) for the last 24 hours. Reports the minimum, average and maximum from the summary of the result and describes the trend from the buckets, with the unit from the metric definition. It does not page through raw readings."
+            },
+            {
+              "description": "Geofence membership. Start: the demo company has a geofence named Main warehouse and devices with a reported position.",
+              "prompt": "Which devices are inside the Main warehouse geofence right now?",
+              "tools_triggered": "list_geofences, get_geofence_devices",
+              "expected_behavior": "Finds the geofence id with list_geofences, calls get_geofence_devices and lists the devices that are inside. States that membership comes from each device's last known position and gives the last-seen time."
+            },
+            {
+              "description": "Fleet-wide metric filter. Start: demo devices report a battery level; at least one is below 20 percent.",
+              "prompt": "Which devices have battery below 20% right now?",
+              "tools_triggered": "list_metric_definitions, search_devices_by_metric",
+              "expected_behavior": "Calls search_devices_by_metric with the battery metric, the latest aggregate and the condition lt 20, and lists the matching devices with their values and how many devices report that metric. It does not call get_device for each device."
+            }
+          ],
+          "negative": [
+            {
+              "description": "General knowledge unrelated to the user's Appner fleet. The plugin must not be used.",
+              "prompt": "What will the weather be in Mexico City tomorrow?"
+            },
+            {
+              "description": "Programming help with no Appner data involved. The plugin must not be used.",
+              "prompt": "Write a Python script that reads a CSV file and prints the average of the second column."
+            },
+            {
+              "description": "Shopping advice about hardware in general, not a question about the user's own devices. The plugin must not be used.",
+              "prompt": "Which GPS tracker should I buy for my bicycle?"
+            }
+          ]
+        }
+      },
+      "publication": {
+        "release_notes": "First public release. Connects ChatGPT to your Appner company account with OAuth sign-in. Read tools for fleet health, silent devices, device location, telemetry history with min, average and max, fleet-wide metric filters, time beyond a threshold, geofence membership and history, alert rules and alert events, and device commands. Administrators can queue or cancel device commands on explicit request. Includes eight skills that guide the assistant through common fleet questions."
+      }
+    }
+  }
 }
