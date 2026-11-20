@@ -1,5 +1,7 @@
 # Appner AI Connect
 
+**English** · [Español](README.es.md)
+
 Ask your AI assistant about your Appner IoT fleet in plain words:
 *"How many devices do I have?"*, *"Which trucks stopped reporting today?"*,
 *"Where is VEH-FRESHBOX-01?"*
