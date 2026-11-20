@@ -1,23 +1,45 @@
 {
   "name": "appner",
   "displayName": "Appner",
-  "icon": "assets/icon.png",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Unified IoT Data & Intelligence Platform. Ask about your Appner fleet: device state, offline devices, telemetry history, geofences and alerts. Connects to your Appner company account over MCP with OAuth sign-in.",
   "author": {
     "name": "Appner",
+    "email": "contacto@appner.com",
     "url": "https://appner.com"
   },
   "homepage": "https://appner.com",
-  "repository": "https://github.com/appner-iot/ai-connect",
+  "repository": "https://github.com/Appner-IoT/ai-connect",
   "license": "MIT",
-  "privacyPolicyUrl": "https://appner.com/en/privacy-policy/",
   "keywords": [
     "iot",
     "fleet",
     "telemetry",
     "gps",
     "tracking",
+    "geofences",
+    "alerts",
+    "devices",
     "mcp"
-  ]
+  ],
+  "icon": "./assets/icon.png",
+  "documentationUrl": "https://github.com/Appner-IoT/ai-connect#readme",
+  "supportUrl": "https://github.com/Appner-IoT/ai-connect/issues",
+  "privacyPolicyUrl": "https://appner.com/en/privacy-policy/",
+  "commands": {
+    "fleet": {
+      "content": "Give me an overview of my Appner fleet: total devices, how many are online and offline, parser errors, SIM issues, and the devices that need attention. Use the appner-fleet-overview skill and name devices by their names, not ids.",
+      "description": "Fleet overview: totals, online, problems"
+    },
+    "offline": {
+      "content": "List my Appner devices that stopped reporting, most urgent first, with each device's name and when it was last seen. Use the appner-problem-devices skill. If I gave a time window, use it: $ARGUMENTS",
+      "description": "Devices that stopped reporting",
+      "argumentHint": "[hours, e.g. 3]"
+    },
+    "where": {
+      "content": "Where is this Appner device right now, and how fresh is that position? Resolve it by name, IMEI or serial number and use the appner-device-location skill. Device: $ARGUMENTS",
+      "description": "Last known location of a device",
+      "argumentHint": "<device name, IMEI or serial>"
+    }
+  }
 }

@@ -23,6 +23,14 @@ locations and geofences, alerts, device commands) in fewer steps.
 
 Then run `/mcp`, pick **appner** and sign in.
 
+The plugin adds three shortcuts:
+
+| Command | What it does |
+| --- | --- |
+| `/appner:fleet` | Fleet overview: totals, online and offline, devices that need attention |
+| `/appner:offline [hours]` | Devices that stopped reporting, most urgent first |
+| `/appner:where <device>` | Last known location of a device, by name, IMEI or serial number |
+
 ### Antigravity CLI and Gemini CLI
 
 Google replaced Gemini CLI with **Antigravity CLI** for personal Google accounts (free and
