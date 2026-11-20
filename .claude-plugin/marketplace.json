@@ -1,0 +1,14 @@
+{
+  "name": "appner",
+  "owner": { "name": "Appner", "url": "https://appner.com" },
+  "metadata": { "description": "Appner IoT platform plugins for AI assistants" },
+  "plugins": [
+    {
+      "name": "appner",
+      "source": "./",
+      "description": "Fleet and device questions answered from your Appner tenant: device state, offline devices, telemetry history, geofences, alerts.",
+      "version": "0.2.0",
+      "category": "iot"
+    }
+  ]
+}
