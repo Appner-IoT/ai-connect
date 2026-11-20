@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "appner",
-      "displayName": "Appner",
+      "displayName": "Appner IoT",
       "source": "./",
       "description": "Unified IoT Data & Intelligence Platform. Ask about your Appner fleet: device state, offline devices, telemetry history, geofences and alerts. Connects to your Appner company account over MCP with OAuth sign-in.",
       "category": "iot",

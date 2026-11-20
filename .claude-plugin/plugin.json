@@ -1,7 +1,7 @@
 {
   "name": "appner",
-  "displayName": "Appner",
-  "version": "0.3.1",
+  "displayName": "Appner IoT",
+  "version": "0.3.2",
   "description": "Unified IoT Data & Intelligence Platform. Ask about your Appner fleet: device state, offline devices, telemetry history, geofences and alerts. Connects to your Appner company account over MCP with OAuth sign-in.",
   "author": {
     "name": "Appner",
@@ -21,9 +21,5 @@
     "alerts",
     "devices",
     "mcp"
-  ],
-  "icon": "./assets/icon.png",
-  "documentationUrl": "https://github.com/Appner-IoT/ai-connect#readme",
-  "supportUrl": "https://github.com/Appner-IoT/ai-connect/issues",
-  "privacyPolicyUrl": "https://appner.com/en/privacy-policy/"
+  ]
 }
