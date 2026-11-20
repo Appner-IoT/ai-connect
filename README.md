@@ -21,23 +21,28 @@ locations and geofences, alerts, device commands) in fewer steps.
 
 Then run `/mcp`, pick **appner** and sign in.
 
-### Gemini CLI
+### Antigravity CLI and Gemini CLI
 
-```bash
-gemini extensions install https://github.com/appner-iot/ai-connect
-```
+Google replaced Gemini CLI with **Antigravity CLI** for personal Google accounts (free and
+Google AI plans); Gemini CLI still works with Gemini Code Assist Standard or Enterprise. Use the
+one your Google account supports.
 
-Start `gemini`, then run `/mcp auth appner` and sign in in the browser window.
-
-### Antigravity CLI
+**Antigravity CLI**
 
 ```bash
 git clone https://github.com/appner-iot/ai-connect
 agy plugin install ./ai-connect
 ```
 
-Then open `/plugin`, expand **appner** under Installed and choose **Sign in**. If you already
-installed the Gemini CLI extension, `agy plugin import gemini` brings it over instead.
+Then open `/plugin`, expand **appner** under Installed and choose **Sign in**.
+
+**Gemini CLI** (Gemini Code Assist Standard or Enterprise)
+
+```bash
+gemini extensions install https://github.com/appner-iot/ai-connect
+```
+
+Start `gemini`, then run `/mcp auth appner` and sign in in the browser window.
 
 ### OpenAI Codex
 
