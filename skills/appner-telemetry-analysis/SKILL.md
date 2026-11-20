@@ -22,7 +22,8 @@ Read [metric-semantics](../appner-domain/references/metric-semantics.md) and [sa
 ## Limits
 
 - `get_telemetry` works on **one** device per call, window at most 31 days. count/min/avg/max come from the server (`buckets`, `summary`); quote them, do not recompute them from raw pages.
-- Anything the server does not return (median, percentiles, rate of change) you may derive from the buckets you received; say that it is derived and from which bucket size.
+- Median and percentiles cannot be derived from count/min/avg/max: different readings give the same aggregates. If the user needs them, read the raw readings (no `bucket`), page until you have all `count` readings of the window, and only then compute; if the window is too large for that, say the server does not provide them and offer min/avg/max instead.
+- A change between buckets (for example "the average rose 3 °C between 10:00 and 14:00") may be stated from the bucket averages; name the bucket size.
 - Do not loop over devices to "scan" a fleet. Use `search_devices_by_metric` for metric questions and `search_devices_by_state` for silent devices.
 - `get_threshold_duration` and `get_device_geofence_history` cover at most 7 days per call.
 - For dashboards the user should use Grafana; in chat, describe the trend from the buckets.

@@ -4,17 +4,21 @@
   python3 scripts/check_chatgpt_package.py            # the working tree
   python3 scripts/check_chatgpt_package.py dist/x.zip # an unpacked copy of a built ZIP
 
-Rules come from the Agent Plugins 1.0.0 manifest schema and the OpenAI submission guide
-(https://developers.openai.com/plugins/deploy/submission).
+Rules come from the Agent Plugins 1.0.0 manifest schema, the OpenAI submission guide
+(https://developers.openai.com/plugins/deploy/submission) and its list of validation errors
+(https://developers.openai.com/plugins/deploy/submission-errors). Limits are the ones for the
+final directory submission, which are tighter than the ones for uploading a package.
 """
 
 import json
 import re
+import unicodedata
 import struct
 import sys
 import tempfile
 import zipfile
 from pathlib import Path
+from urllib.parse import urlsplit
 
 ROOT_KEYS = {"$schema", "name", "version", "description", "author", "homepage", "repository",
              "license", "keywords", "extensions"}
@@ -23,6 +27,10 @@ NAME = re.compile(r"^(?!.*(?:--|\.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$")
 URL_FIELDS = ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL")
 REQUIRED_INTERFACE = ("displayName", "shortDescription", "longDescription", "developerName",
                       "category", "defaultPrompt", "logo", "composerIcon") + URL_FIELDS
+CATEGORIES = {"Productivity", "Creativity", "Developer Tools", "Business & Operations",
+              "Data & Analytics", "Communication", "Education & Research", "Security", "Finance",
+              "Healthcare", "Travel", "Entertainment", "Other"}
+LISTING_URL_MAX = 1024
 SECRET = re.compile(r"password|passwd|secret|api[_-]?key|bearer\s+[a-z0-9]", re.I)
 PACKAGE_ENTRIES = {"plugin.json", "mcp.json", "skills", "assets", "LICENSE"}
 
@@ -32,6 +40,24 @@ errors: list[str] = []
 def check(ok: bool, message: str) -> None:
     if not ok:
         errors.append(message)
+
+
+def https_url(value: object, limit: int) -> bool:
+    """An HTTPS URL with a host, without embedded credentials, within the length limit."""
+    if not isinstance(value, str) or not 0 < len(value) <= limit or value != value.strip():
+        return False
+    parts = urlsplit(value)
+    return parts.scheme == "https" and bool(parts.hostname) and parts.username is None \
+        and parts.password is None and not any(c.isspace() for c in value)
+
+
+def one_line(value: object, limit: int) -> bool:
+    return isinstance(value, str) and 0 < len(value.strip()) <= limit and "\n" not in value \
+        and "\r" not in value
+
+
+def normalized(text: str) -> str:
+    return " ".join(unicodedata.normalize("NFKC", text).casefold().split())
 
 
 def inside(root: Path, rel: str) -> Path | None:
@@ -52,27 +78,36 @@ def check_manifest(root: Path) -> None:
     check(re.fullmatch(r"\d+\.\d+\.\d+", manifest.get("version", "")) is not None,
           "plugin.json: version is not x.y.z")
     check(0 < len(manifest.get("description", "")) <= 4000, "plugin.json: description length")
-    check(not set(manifest.get("author", {})) - AUTHOR_KEYS, "plugin.json: unknown author key")
-    check(0 < len(manifest.get("author", {}).get("name", "")) <= 120, "plugin.json: author.name")
+    author = manifest.get("author", {})
+    check(not set(author) - AUTHOR_KEYS, "plugin.json: unknown author key")
+    check(one_line(author.get("name"), 120), "plugin.json: author.name")
+    for label, value in (("author.url", author.get("url")), ("homepage", manifest.get("homepage"))):
+        check(value is None or https_url(value, 2048), f"plugin.json: {label} must be an https URL")
 
     openai = manifest.get("extensions", {}).get("com.openai", {})
     card = openai.get("interface", {})
     for key in REQUIRED_INTERFACE:
         check(bool(card.get(key)), f"interface.{key} is missing")
-    check(len(card.get("displayName", "")) <= 30, "interface.displayName over 30 characters")
-    check(len(card.get("shortDescription", "")) <= 30, "interface.shortDescription over 30")
+    check(one_line(card.get("displayName"), 30), "interface.displayName: one line, at most 30")
+    check(one_line(card.get("shortDescription"), 30),
+          "interface.shortDescription: one line, at most 30")
     check(len(card.get("longDescription", "")) <= 4000, "interface.longDescription over 4000")
-    check(len(card.get("developerName", "")) <= 80, "interface.developerName over 80")
+    check(one_line(card.get("developerName"), 80), "interface.developerName: one line, at most 80")
+    check(card.get("category") in CATEGORIES,
+          f"interface.category {card.get('category')!r} is not one of {sorted(CATEGORIES)}")
     for key in URL_FIELDS:
-        check(card.get(key, "").startswith("https://") and len(card.get(key, "")) <= 2048,
-              f"interface.{key} must be an https URL")
+        check(https_url(card.get(key), LISTING_URL_MAX),
+              f"interface.{key}: https URL with a host, no credentials, at most {LISTING_URL_MAX}")
     prompts = card.get("defaultPrompt", [])
     check(isinstance(prompts, list) and 1 <= len(prompts) <= 3, "defaultPrompt: 1 to 3 prompts")
-    check(len(set(prompts)) == len(prompts), "defaultPrompt: prompts must differ")
+    prompts = [p for p in prompts if isinstance(p, str)] if isinstance(prompts, list) else []
+    check(len({normalized(p) for p in prompts}) == len(prompts), "defaultPrompt: prompts must differ")
     for prompt in prompts:
-        check(len(prompt) <= 128 and "@" not in prompt, f"defaultPrompt too long or has @: {prompt}")
+        check(one_line(prompt, 128) and "@" not in prompt,
+              f"defaultPrompt: one line, at most 128, no @mention: {prompt}")
     capabilities = card.get("capabilities", [])
-    check(len(capabilities) <= 20 and all(len(c) <= 120 for c in capabilities), "capabilities")
+    check(isinstance(capabilities, list) and len(capabilities) <= 20
+          and all(one_line(c, 120) for c in capabilities), "capabilities: at most 20, 120 each")
     for key in ("logo", "composerIcon", "logoDark", "composerIconDark"):
         if key in card:
             icon = inside(root, card[key])
@@ -94,7 +129,7 @@ def check_manifest(root: Path) -> None:
         check(set(case) == {"description", "prompt"}, f"negative case keys: {sorted(case)}")
     check(bool(openai.get("publication", {}).get("release_notes")), "publication.release_notes")
     demo = openai.get("review", {}).get("demo_recording_url")
-    check(demo is None or demo.startswith("https://"), "review.demo_recording_url must be https")
+    check(demo is None or https_url(demo, 2048), "review.demo_recording_url must be https")
     check(not SECRET.search(json.dumps(openai.get("review", {}))),
           "review: looks like a credential; reviewer sign-in goes into the portal only")
 
@@ -114,6 +149,7 @@ def check_mcp(root: Path) -> None:
 
 
 def check_skills(root: Path) -> None:
+    plugin = json.loads((root / "plugin.json").read_text()).get("name", "")
     skills = sorted((root / "skills").glob("*/SKILL.md"))
     check(len(skills) >= 8, f"only {len(skills)} skills")
     for skill in skills:
@@ -122,7 +158,8 @@ def check_skills(root: Path) -> None:
         if front:
             fields = dict(l.split(": ", 1) for l in front.group(1).splitlines() if ": " in l)
             check(fields.get("name") == skill.parent.name, f"{skill}: name differs from folder")
-            check(len(fields.get("description", "")) > 40, f"{skill}: description too short")
+            check(40 < len(fields.get("description", "")) <= 1024, f"{skill}: description length")
+            check(len(f"{plugin}:{skill.parent.name}") <= 64, f"{skill}: plugin:skill over 64")
     for doc in sorted((root / "skills").rglob("*.md")):
         for target in re.findall(r"\]\((?!https?://)([^)#]+)", doc.read_text()):
             check((doc.parent / target).is_file(), f"{doc}: broken link {target}")

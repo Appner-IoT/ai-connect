@@ -43,4 +43,4 @@ For dashboards the user should still use Grafana.
 
 - Thresholds that are not in metric `valid_range` / alert labels
 - Units that are not on the definition
-- Aggregates the server did not return. count/min/avg/max come from `get_telemetry` buckets and summary or from `search_devices_by_metric`; anything else (median, percentiles) is your own estimate from those buckets and must be labelled as one
+- Aggregates the server did not return. count/min/avg/max come from `get_telemetry` buckets and summary or from `search_devices_by_metric`. Median and percentiles cannot be derived from those aggregates; compute them only from the complete raw readings of the window (every page), otherwise say they are not available
