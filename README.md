@@ -18,7 +18,7 @@ locations and geofences, alerts, device commands) in fewer steps.
 
 ```
 /plugin marketplace add appner-iot/ai-connect
-/plugin install appner@appner
+/plugin install appner-iot@appner
 ```
 
 Then run `/mcp`, pick **appner** and sign in.
@@ -27,9 +27,9 @@ The plugin adds three shortcuts:
 
 | Command | What it does |
 | --- | --- |
-| `/appner:fleet` | Fleet overview: totals, online and offline, devices that need attention |
-| `/appner:offline [hours]` | Devices that stopped reporting, most urgent first |
-| `/appner:where <device>` | Last known location of a device, by name, IMEI or serial number |
+| `/appner-iot:fleet` | Fleet overview: totals, online and offline, devices that need attention |
+| `/appner-iot:offline [hours]` | Devices that stopped reporting, most urgent first |
+| `/appner-iot:where <device>` | Last known location of a device, by name, IMEI or serial number |
 
 ### Antigravity CLI and Gemini CLI
 

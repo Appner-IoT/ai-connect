@@ -19,7 +19,7 @@ geocercas, alertas, comandos a dispositivos) en menos pasos.
 
 ```
 /plugin marketplace add appner-iot/ai-connect
-/plugin install appner@appner
+/plugin install appner-iot@appner
 ```
 
 Después ejecuta `/mcp`, elige **appner** e inicia sesión.
@@ -28,9 +28,9 @@ El plugin agrega tres atajos:
 
 | Comando | Qué hace |
 | --- | --- |
-| `/appner:fleet` | Resumen de la flota: totales, en línea y sin conexión, dispositivos que requieren atención |
-| `/appner:offline [horas]` | Dispositivos que dejaron de reportar, primero los más urgentes |
-| `/appner:where <dispositivo>` | Última ubicación conocida de un dispositivo, por nombre, IMEI o número de serie |
+| `/appner-iot:fleet` | Resumen de la flota: totales, en línea y sin conexión, dispositivos que requieren atención |
+| `/appner-iot:offline [horas]` | Dispositivos que dejaron de reportar, primero los más urgentes |
+| `/appner-iot:where <dispositivo>` | Última ubicación conocida de un dispositivo, por nombre, IMEI o número de serie |
 
 ### Antigravity CLI y Gemini CLI
 
