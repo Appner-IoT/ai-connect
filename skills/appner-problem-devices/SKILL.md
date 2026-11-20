@@ -12,9 +12,10 @@ Read [device-state](../appner-domain/references/device-state.md), [alerts](../ap
 1. Population: `get_fleet_health_summary` for counts.
 2. Silent devices: `search_devices_by_state` with `offline_for_minutes` (e.g. 180 for "stopped reporting in the last 3h"). Results are most-stale first and paginated; `count` is the full total. Use `page` to read more only if the user needs the whole list.
 3. Alerts: `list_alert_events` with `state=firing` and a bounded window.
-4. Inventory filters if needed: `search_devices` with administrative `status` / `group_id` — this is **not** an online filter.
-5. Extra detail on the **top** candidates only: `get_device` (parser errors, GPS freshness). Never one call per device across the fleet.
-6. Rank and explain.
+4. Metric problems (low battery, temperature out of range, no movement): `search_devices_by_metric` with the metric, an aggregate and `op` + `value` taken from the user or from `list_alert_rules`. One call covers the fleet.
+5. Inventory filters if needed: `search_devices` with administrative `status` / `group_id` — this is **not** an online filter.
+6. Extra detail on the **top** candidates only: `get_device` (parser errors, GPS freshness). Never one call per device across the fleet.
+7. Rank and explain.
 
 ## Ranking (documented, not fake thresholds)
 
@@ -25,7 +26,7 @@ Higher urgency when evidence stacks:
 3. `online=0` / old `last_seen` without alert
 4. SIM issues from fleet KPIs (count only unless you have the device)
 
-Explain why each candidate ranked. Do not invent battery/GPS thresholds.
+Explain why each candidate ranked. Do not invent battery/GPS thresholds: take them from the user's words or from a configured rule (`list_alert_rules`).
 
 ## Gaps
 
@@ -35,4 +36,4 @@ Explain why each candidate ranked. Do not invent battery/GPS thresholds.
 
 ## Complex-query pattern
 
-`how many / which devices` → summary → `search_devices_by_state` → extra info on top candidates → rank. Never "load all telemetry then filter in the model."
+`how many / which devices` → summary → `search_devices_by_state` (silence) or `search_devices_by_metric` (values) → extra info on top candidates → rank. Never "load all telemetry then filter in the model."

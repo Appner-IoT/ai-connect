@@ -11,14 +11,18 @@ Read [metric-semantics](../appner-domain/references/metric-semantics.md) and [sa
 
 1. `resolve_device`.
 2. `list_metric_definitions` (or resource `appner://metric-definitions`) to know names/units and `valid_range`.
-3. History questions ("last 24h", "since yesterday", trend): `get_telemetry` with `device_id`, `metrics=[...]` (only what was asked, max 20) and a window. Default window is the last 24h; maximum 31 days. Convert the user's wording to `from_ms` / `to_ms`.
-4. Pagination: results are oldest first. If `count` is larger than what you received, request the next `page` (or narrow the window / metrics) before concluding anything. Say explicitly when you only saw part of the window.
-5. Current value only: `get_device` → `diagnostics.latest_metrics`.
-6. Missing vs zero: a `null` value is a missing reading; numeric 0 is zero. Mention gaps explicitly; an empty `data` array means no readings in the window, not zero.
-7. Anomalies: you may compare returned values to the definition's `valid_range` if present. Do not invent thresholds. Firing alerts (`list_alert_events`) are stronger evidence than guessed spikes.
+3. Statistics and trends ("last 24h", "since yesterday", min/avg/max, range, gaps): `get_telemetry` with `device_id`, `metrics=[...]` (only what was asked, max 20), a window and a `bucket` (`5m`, `15m`, `1h`, `6h`, `1d`). One call returns `buckets` with count/min/avg/max and a whole-window `summary`. Default window is the last 24h; maximum 31 days. Convert the user's wording to `from_ms` / `to_ms`; pick a bucket that gives roughly 12 to 100 buckets.
+4. Single readings ("what exactly did it report at 14:05", "show the last readings"): `get_telemetry` without `bucket`. Results are raw, oldest first and paginated; if `count` is larger than what you received, request the next `page` or narrow the window, and say when you only saw part of it. Do not page through raw readings to compute statistics.
+5. Time beyond a limit ("how long was the cargo above 8 °C today"): `get_threshold_duration` with `metric`, `op`, `value` (window max 7 days). Report `beyond_ms`, the number of `episodes` and the longest one, and `unknown_ms` when it is large.
+6. The same question for the whole fleet ("which sensors went above 8 °C"): `search_devices_by_metric`, one call.
+7. Current value only: `get_device` → `diagnostics.latest_metrics`.
+8. Missing vs zero: a `null` value is a missing reading; numeric 0 is zero. A bucket with `count` 0 or an empty result means no readings in that time, not zero. Mention gaps explicitly.
+9. Anomalies: you may compare returned values to the definition's `valid_range` if present. Do not invent thresholds. Firing alerts (`list_alert_events`) are stronger evidence than guessed spikes.
 
 ## Limits
 
-- `get_telemetry` returns raw points for **one** device. There is no server-side avg/min/max; compute them only from points you actually received and say so.
-- Do not page through huge windows to "scan" a fleet. For fleet-wide questions use `get_fleet_health_summary` / `search_devices_by_state`.
-- Charts are Grafana's job; offer a Grafana pointer, don't try to render from raw points.
+- `get_telemetry` works on **one** device per call, window at most 31 days. count/min/avg/max come from the server (`buckets`, `summary`); quote them, do not recompute them from raw pages.
+- Anything the server does not return (median, percentiles, rate of change) you may derive from the buckets you received; say that it is derived and from which bucket size.
+- Do not loop over devices to "scan" a fleet. Use `search_devices_by_metric` for metric questions and `search_devices_by_state` for silent devices.
+- `get_threshold_duration` and `get_device_geofence_history` cover at most 7 days per call.
+- For dashboards the user should use Grafana; in chat, describe the trend from the buckets.
