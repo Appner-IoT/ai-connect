@@ -1,7 +1,7 @@
 {
-  "name": "appner",
+  "name": "appner-iot",
   "displayName": "Appner IoT",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Unified IoT Data & Intelligence Platform. Ask about your Appner fleet: device state, offline devices, telemetry history, geofences and alerts. Connects to your Appner company account over MCP with OAuth sign-in.",
   "author": {
     "name": "Appner IoT",
