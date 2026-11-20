@@ -1,9 +1,22 @@
 {
   "name": "appner",
+  "displayName": "Appner",
   "version": "0.2.0",
-  "description": "Ask Claude about your Appner IoT fleet: device state, offline devices, telemetry history, geofences and alerts. Connects to your Appner tenant over MCP with OAuth.",
-  "author": { "name": "Appner", "url": "https://appner.com" },
+  "description": "Unified IoT Data & Intelligence Platform. Ask about your Appner fleet: device state, offline devices, telemetry history, geofences and alerts. Connects to your Appner company account over MCP with OAuth sign-in.",
+  "author": {
+    "name": "Appner",
+    "url": "https://appner.com"
+  },
   "homepage": "https://appner.com",
   "repository": "https://github.com/appner-iot/ai-connect",
-  "keywords": ["iot", "fleet", "telemetry", "gps", "tracking", "mcp"]
+  "license": "MIT",
+  "privacyPolicyUrl": "https://appner.com/en/privacy-policy/",
+  "keywords": [
+    "iot",
+    "fleet",
+    "telemetry",
+    "gps",
+    "tracking",
+    "mcp"
+  ]
 }

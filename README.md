@@ -29,14 +29,7 @@ Google replaced Gemini CLI with **Antigravity CLI** for personal Google accounts
 Google AI plans); Gemini CLI still works with Gemini Code Assist Standard or Enterprise. Use the
 one your Google account supports.
 
-**Antigravity CLI**
-
-```bash
-git clone https://github.com/appner-iot/ai-connect
-agy plugin install ./ai-connect
-```
-
-Then open `/plugin`, expand **appner** under Installed and choose **Sign in**.
+**Antigravity CLI:** see [docs/antigravity.md](docs/antigravity.md).
 
 **Gemini CLI** (Gemini Code Assist Standard or Enterprise)
 

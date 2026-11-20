@@ -1,12 +1,17 @@
 {
   "name": "appner",
-  "owner": { "name": "Appner", "url": "https://appner.com" },
-  "metadata": { "description": "Appner IoT platform plugins for AI assistants" },
+  "owner": {
+    "name": "Appner",
+    "url": "https://appner.com"
+  },
+  "metadata": {
+    "description": "Appner IoT platform plugins for AI assistants"
+  },
   "plugins": [
     {
       "name": "appner",
       "source": "./",
-      "description": "Fleet and device questions answered from your Appner tenant: device state, offline devices, telemetry history, geofences, alerts.",
+      "description": "Unified IoT Data & Intelligence Platform. Ask about your Appner fleet: device state, offline devices, telemetry history, geofences and alerts. Connects to your Appner company account over MCP with OAuth sign-in.",
       "version": "0.2.0",
       "category": "iot"
     }
