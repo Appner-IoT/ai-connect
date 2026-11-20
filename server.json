@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.appner/mcp",
+  "title": "Appner",
+  "description": "Unified IoT Data & Intelligence Platform: ask about your IoT fleet in plain words.",
+  "version": "1.0.0",
+  "websiteUrl": "https://appner.com",
+  "repository": {
+    "url": "https://github.com/Appner-IoT/ai-connect",
+    "source": "github"
+  },
+  "icons": [
+    { "src": "https://mcp.appner.com/icon.svg", "mimeType": "image/svg+xml", "sizes": ["any"] },
+    { "src": "https://mcp.appner.com/icon-180.png", "mimeType": "image/png", "sizes": ["180x180"] }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.appner.com/mcp"
+    }
+  ]
+}
