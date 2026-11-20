@@ -80,3 +80,8 @@ administrator to remove your access.
 ## Questions
 
 Contact your Appner administrator, or see https://appner.com.
+
+## Privacy
+
+What the connector accesses and stores is described in the Appner
+[Privacy policy](https://appner.com/en/privacy-policy/) (section 5, AI assistant connector).
