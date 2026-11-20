@@ -2,7 +2,7 @@
   "name": "appner",
   "version": "0.2.0",
   "description": "Ask about your Appner IoT fleet: device state, offline devices, telemetry history, geofences and alerts.",
-  "contextFileName": "GEMINI.md",
+  "contextFileName": "rules/appner.md",
   "mcpServers": {
     "appner": {
       "httpUrl": "https://mcp.appner.com/mcp"

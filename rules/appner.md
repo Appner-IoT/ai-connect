@@ -1,3 +1,8 @@
+---
+trigger: model_decision
+description: Use when the user asks about their Appner IoT fleet, devices, telemetry, locations, geofences, alerts or device commands.
+---
+
 # Appner
 
 The `appner` MCP server answers questions about the user's Appner IoT fleet: devices, their

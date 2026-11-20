@@ -29,6 +29,16 @@ gemini extensions install https://github.com/appner-iot/ai-connect
 
 Start `gemini`, then run `/mcp auth appner` and sign in in the browser window.
 
+### Antigravity CLI
+
+```bash
+git clone https://github.com/appner-iot/ai-connect
+agy plugin install ./ai-connect
+```
+
+Then open `/plugin`, expand **appner** under Installed and choose **Sign in**. If you already
+installed the Gemini CLI extension, `agy plugin import gemini` brings it over instead.
+
 ### OpenAI Codex
 
 ```bash
