@@ -89,5 +89,5 @@ Contacta al administrador de Appner de tu empresa, o visita https://appner.com.
 ## Privacidad
 
 Qué datos consulta y guarda el conector se describe en la
-[Política de privacidad](https://appner.com/politica-de-privacidad/) de Appner (sección 5, conector
+[Aviso de privacidad del producto](https://appner.com/politica-de-privacidad-del-producto/) de Appner (sección 5, conector
 para asistentes de IA).
