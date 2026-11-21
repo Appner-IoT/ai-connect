@@ -9,6 +9,9 @@
     "url": "https://appner.com"
   },
   "homepage": "https://appner.com",
+  "supportUrl": "https://appner.com/en/",
+  "privacyPolicyUrl": "https://appner.com/en/product-privacy-policy/",
+  "termsOfServiceUrl": "https://appner.com/en/terms-of-use/",
   "repository": "https://github.com/Appner-IoT/ai-connect",
   "license": "MIT",
   "keywords": [
